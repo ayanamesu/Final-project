@@ -11,7 +11,7 @@ import os
 from nwutil import Request, generate_sample_graph
 class RSAEnv(gym.Env):
 
-    def __init__(self, capacity=20, data_dir='data/train', seed=None):
+    def __init__(self, capacity=20, data_dir='../data/train', seed=None):
 
         # initializes the RSA env.
 
