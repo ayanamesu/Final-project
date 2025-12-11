@@ -13,4 +13,9 @@ from stable_baselines3.common.callbacks import BaseCallback
 from rsaenv import RSAEnv
 
 
-#class
+class dqntrainingcallback(BaseCallback):
+    def __init__(self, verbose=0):
+        super(dqntrainingcallback, self).__init__(verbose)
+        self.rewards = []
+        
+        
