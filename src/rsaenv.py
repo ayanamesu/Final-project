@@ -203,6 +203,9 @@ class RSAEnv(gym.Env):
 
         # 5. Build observation + info
         obs = self._obs()
+        
+        # change by Ansh
+        
         # info = {"blocked": self.blocked}
         info = {"blocked": 0 if success else 1}
 
