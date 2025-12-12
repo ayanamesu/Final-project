@@ -44,16 +44,35 @@ class RSAEnv(gym.Env):
 
         # ------------------------------------------------------------------------------------------
         # Load requests from CSV files in data/train directory
-        #-------------------------------------------------------------------------------------------
-
-        self.requests = []
-        for file in os.listdir(self.data_dir):
-            if file.endswith(".csv"):
-                self.requests += self._load_requests(os.path.join(self.data_dir, file))
-
-        if len(self.requests) == 0:
-            raise RuntimeError("No CSV files found in data/train")
         
+        # change by Ansh
+        
+        
+        # Each file's 100 requests will form ONE EPISODE.
+        #-------------------------------------------------------------------------------------------
+        
+        
+        # self.requests = []
+        # for file in os.listdir(self.data_dir):
+        #     if file.endswith(".csv"):
+        #         self.requests += self._load_requests(os.path.join(self.data_dir, file))
+
+        # if len(self.requests) == 0:
+        #     raise RuntimeError("No CSV files found in data/train")
+        
+        
+        self.request_sets = []
+        for file in sorted(os.listdir(self.data_dir)):
+            if file.endswith(".csv"):
+                path = os.path.join(self.data_dir, file)
+                self.request_sets.append(self._load_requests(path))
+
+        if len(self.request_sets) == 0:
+            raise RuntimeError("No CSV files found in data/train")
+
+        # Initialize with the first file's requests by default
+        self.requests = self.request_sets[0]
+
         # ------------------------------------------------------------------------------------------
         # Generate network topology using generate_sample_graph()
         #-------------------------------------------------------------------------------------------
@@ -103,8 +122,34 @@ class RSAEnv(gym.Env):
     #-------------------------------------------------------------------------------------------
     #Reset function
     #------------------------------------------------------------------------------------------
+    # def reset(self, seed=None, options=None):
+    #     super().reset(seed=seed)
+
+    #     # reset links
+    #     for u, v, data in self.graph.edges(data=True):
+    #         data["state"].wavelengths = [False] * self.capacity
+    #         data["state"].lightpaths = {}
+
+    #     self.step_idx = 0
+    #     self.req_counter = 0
+    #     self.blocked = 0
+    #     self.success = 0
+    #     self.active_lightpaths.clear()
+
+    #     # first request
+    #     self.current_request = self.requests[0]
+    #     return self._obs(), {}
+
+    
+    #change reset function by Ansh
+
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
+
+        # --- Pick ONE file for this episode ---
+        # One simulation (episode) = one request file with 100 requests
+        idx = self.rng.integers(len(self.request_sets))
+        self.requests = self.request_sets[idx]
 
         # reset links
         for u, v, data in self.graph.edges(data=True):
@@ -117,10 +162,10 @@ class RSAEnv(gym.Env):
         self.success = 0
         self.active_lightpaths.clear()
 
-        # first request
+        # first request of this file
         self.current_request = self.requests[0]
         return self._obs(), {}
-    
+
     #-------------------------------------------------------------------------------------------
     # Step function
     #------------------------------------------------------------------------------------------
@@ -158,7 +203,8 @@ class RSAEnv(gym.Env):
 
         # 5. Build observation + info
         obs = self._obs()
-        info = {"blocked": self.blocked}
+        # info = {"blocked": self.blocked}
+        info = {"blocked": 0 if success else 1}
 
         return obs, reward, terminated, False, info
     
