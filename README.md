@@ -162,9 +162,8 @@ Each will include a brief explanation of trends and observations.
 ---
 
 ## Notes  
-This README intentionally leaves space for:  
+left space for:  
 - hyperparameter tuning summary  
 - evaluation results  
 - final observations and discussion  
 
-(Will be added after the third team member completes the evaluation stage.)
