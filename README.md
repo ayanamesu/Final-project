@@ -169,9 +169,9 @@ Each configuration was trained for **40,000 timesteps** and evaluated using:
 - 10‑episode moving‑average reward  
 - 10‑episode moving‑average blocking rate  
 
-\[
-B = frac{	ext{blocked requests}}{	ext{total requests}}
-\]
+The episodic blocking rate is defined as:
+B = (# blocked requests) / (# total requests)
+
 ---
 
 ## Results  
