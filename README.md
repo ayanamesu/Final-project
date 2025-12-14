@@ -15,19 +15,48 @@ python dqn_runner.py --capacity 20
 python dqn_runner.py --capacity 10
 ```
 
-Each run trains an agent using `data/train/`, saves a model under `models/`, and generates training plots under `plots/`.
+Each run trains an agent using `data/train/`, saves a model under `models/`, and generates training plots under `plots/`. 
 
-### Evaluation  
-(Will be completed once evaluation.py is finalized.)
+### Evaluation 
 
 After training, evaluation will be run using:
 
 ```bash
-python evaluation.py --capacity 20 --model_path ../models/dqn_capacity_20.zip --episodes 2000
-python evaluation.py --capacity 10 --model_path ../models/dqn_capacity_10.zip --episodes 2000
+python evaluation.py --capacity 20 --model_path ../models/dqn_capacity_20.zip
+python evaluation.py --capacity 10 --model_path ../models/dqn_capacity_10.zip
 ```
 
 This evaluates the trained models on `data/eval` using deterministic predictions.
+
+---
+
+### Hyperparameter Tuning (Systematic Search)
+
+The baseline tuning command format is:
+
+```bash
+python dqn_runner.py --capacity 20 --lr <value> --exploration_fraction <value> --timesteps 40000 --tag <label>
+```
+
+Substitute the values with:
+
+- `<value>` for learning rate: **0.0005**, **0.001**, **0.002**  
+- `<value>` for exploration fraction: **0.1**, **0.2**  
+- `<label>` any short identifier, e.g. `lr5e-4_exp0.1`
+
+This creates **6 total tuning runs**.
+
+Each tuning run:
+- trains for 40,000 timesteps,
+- saves tagged models to `../models/`,
+- saves tagged plots to `../plots/`.
+
+Based on comparing 10-episode moving-average reward and blocking rate, the best configuration was:
+
+- **learning_rate = 1e-3**  
+- **exploration_fraction = 0.1**
+
+These values are now the defaults used for all final training runs.
 
 ---
 
@@ -94,8 +123,6 @@ This allows computing the **episodic blocking rate**, the main optimization obje
 
 ![](blocking_rate.png)
 
-
-
 ---
 
 ## Additional Constraints
@@ -129,7 +156,19 @@ exploration_final_eps = 0.05
 Training runs use **200,000 timesteps per capacity**, giving ~2000 episodes (each ≈100 requests).
 
 ### Hyperparameter Tuning  
-(Section reserved for final report after evaluation and performance review.)
+
+We performed grid search over:
+
+- Learning rate ∈ {5e‑4, 1e‑3, 2e‑3}
+- Exploration fraction ∈ {0.1, 0.2}
+
+Each configuration was trained for **40,000 timesteps** and evaluated using:
+
+- 10‑episode moving‑average reward  
+- 10‑episode moving‑average blocking rate  
+
+The episodic blocking rate is defined as:
+B = (# blocked requests) / (# total requests)
 
 ---
 
@@ -187,10 +226,3 @@ Training runs use **200,000 timesteps per capacity**, giving ~2000 episodes (eac
 - `data/train`, `data/eval` — datasets
 
 ---
-
-## Notes  
-left space for:  
-- hyperparameter tuning summary  
-- evaluation results  
-- final observations and discussion  
-
