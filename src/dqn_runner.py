@@ -1,4 +1,3 @@
-# dqn_runner.py
 import argparse
 import os
 import numpy as np
@@ -95,7 +94,13 @@ def plot_curve(values, title, ylabel, save_path):
     plt.close()
 
 
-def train_agent(capacity: int):
+def train_agent(
+    capacity: int,
+    learning_rate: float = 1e-3,
+    exploration_fraction: float = 0.2,
+    total_timesteps: int = 200_000,
+    tag: str = "",
+):
     """
     Train a DQN agent for a given link capacity.
 
@@ -115,34 +120,36 @@ def train_agent(capacity: int):
 
     callback = TrainCallback()
 
-    # DQN hyperparameters (you can mention/tune these in README)
+    # DQN hyperparameters 
     model = DQN(
-        "MlpPolicy",        # observation is a Box, so MlpPolicy is correct
+        "MlpPolicy",       
         env,
-        learning_rate=1e-3,
+        learning_rate=learning_rate,
         batch_size=64,
         buffer_size=50000,
         learning_starts=1000,
         target_update_interval=1000,
-        exploration_fraction=0.2,
+        exploration_fraction=exploration_fraction,
         exploration_final_eps=0.05,
         gamma=0.99,
         verbose=1,
     )
 
-    # Total timesteps: adjust if you want longer training
-    # 200_000 is a reasonable starting point
     model.learn(
-        total_timesteps=200_000,
+        total_timesteps=total_timesteps,
         callback=callback,
         log_interval=10
     )
+
+    
     print("Episodes recorded:", len(callback.ep_rewards), len(callback.ep_blocking_rates))
     
+    suffix = f"_tag-{tag}" if tag else ""
+
     # Save model
     models_dir = "../models"
     os.makedirs(models_dir, exist_ok=True)
-    model_path = os.path.join(models_dir, f"dqn_capacity_{capacity}.zip")
+    model_path = os.path.join(models_dir, f"dqn_capacity_{capacity}{suffix}.zip")
     model.save(model_path)
     print(f"Saved model to {model_path}")
 
@@ -153,14 +160,14 @@ def train_agent(capacity: int):
         callback.ep_rewards,
         f"Learning Curve (capacity={capacity})",
         "Avg episode reward (moving avg)",
-        os.path.join(plots_dir, f"learning_curve_capacity_{capacity}.png")
+        os.path.join(plots_dir, f"learning_curve_capacity_{capacity}{suffix}.png")
     )
 
     plot_curve(
         callback.ep_blocking_rates,
         f"Training Blocking Rate (capacity={capacity})",
-        "Blocking rate (moving avg)",
-        os.path.join(plots_dir, f"training_blocking_rate_capacity_{capacity}.png")
+        "Average Objective B (moving avg)",
+        os.path.join(plots_dir, f"training_blocking_rate_capacity_{capacity}{suffix}.png")
     )
 
     print(f"Saved training plots to {plots_dir}")
@@ -176,9 +183,41 @@ def main():
         required=True,
         help="Link capacity (e.g., 20 for Part 1, 10 for Part 2)",
     )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=1e-3,
+        help="Learning rate for DQN (for tuning)",
+    )
+    parser.add_argument(
+        "--exploration_fraction",
+        type=float,
+        default=0.1,
+        help="Exploration fraction (for tuning)",
+    )
+    parser.add_argument(
+        "--timesteps",
+        type=int,
+        default=200_000,
+        help="Total training timesteps",
+    )
+    parser.add_argument(
+        "--tag",
+        type=str,
+        default="",
+        help="Optional tag suffix for model/plot filenames (useful for tuning runs)",
+    )
+
     args = parser.parse_args()
 
-    train_agent(args.capacity)
+    train_agent(
+        capacity=args.capacity,
+        learning_rate=args.lr,
+        exploration_fraction=args.exploration_fraction,
+        total_timesteps=args.timesteps,
+        tag=args.tag,
+    )
+
 
 
 if __name__ == "__main__":
