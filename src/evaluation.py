@@ -82,7 +82,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--capacity", type=int, required=True)
     parser.add_argument("--model_path", type=str, required=True)
-    parser.add_argument("--episodes", type=int, default=50)
+    parser.add_argument("--episodes", type=int, default=2000)
 
     args = parser.parse_args()
 
