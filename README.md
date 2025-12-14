@@ -92,7 +92,7 @@ info["blocked"] = 0 or 1
 
 This allows computing the **episodic blocking rate**, the main optimization objective:
 
-(episodic_blocking_rate.png)
+![](episodic_blocking_rate.png)
 
 
 
