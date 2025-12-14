@@ -92,9 +92,9 @@ info["blocked"] = 0 or 1
 
 This allows computing the **episodic blocking rate**, the main optimization objective:
 
-\[
-B = rac{	ext{blocked requests}}{	ext{total requests}}.
-\]
+(episodic_blocking_rate.png)
+
+
 
 ---
 
