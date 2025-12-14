@@ -25,7 +25,7 @@ After training, evaluation will be run using:
 ```bash
 python evaluation.py --capacity 20 --model_path ../models/dqn_capacity_20.zip --episodes 2000
 python evaluation.py --capacity 10 --model_path ../models/dqn_capacity_10.zip --episodes 2000
-
+```
 
 This evaluates the trained models on `data/eval` using deterministic predictions.
 
