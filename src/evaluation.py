@@ -8,8 +8,8 @@ from stable_baselines3.common.env_util import make_vec_env
 
 from rsaenv import RSAEnv
 
+# Same moving average window size as training
 MOVING_AVG = 10
-
 
 def moving_avg(x, w):
     x = np.array(x, dtype=float)
@@ -19,10 +19,8 @@ def moving_avg(x, w):
 
 
 def evaluate_agent(capacity: int, model_path: str, num_episodes: int):
-    """
-    Run deterministic evaluation on data/eval and return per-episode blocking rates.
-    """
-
+    
+    # Deterministic evaluation on data/eval and return per-episode blocking rates for inputted capacity
     print(f"\n=== EVALUATING DQN FOR CAPACITY = {capacity} ===")
     print(f"Model: {model_path}")
 
@@ -82,6 +80,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--capacity", type=int, required=True)
     parser.add_argument("--model_path", type=str, required=True)
+    # default 2000 episodes since that's what agent was trained on
     parser.add_argument("--episodes", type=int, default=2000)
 
     args = parser.parse_args()
@@ -102,3 +101,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
