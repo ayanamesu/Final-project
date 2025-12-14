@@ -133,10 +133,7 @@ Training runs use **200,000 timesteps per capacity**, giving ~2000 episodes (eac
 
 ---
 
-## Results  
-*(Plots and analysis will be added once evaluation.py is completed and all models are trained.)*
-
-Expected structure:
+## Results 
 
 ### Capacity = 20 
 ![Learning Curve](plots/learning_curve_capacity_20.png)
